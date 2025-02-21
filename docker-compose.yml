@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  jersey-microservice-management:
+    build:
+      context: ./jersey-microservice-management
+    container_name: jersey-microservice-management-api
+    ports:
+      - "8084:8080"
+    depends_on:
+      - db
+
+  jersey-microservice-transactions:
+    build:
+      context: ./jersey-microservice-transactions
+    container_name: jersey-microservice-transactions-api
+    ports:
+      - "8085:8080"
+    depends_on:
+      - db
+
+  jersey-microservice-billing:
+    build:
+      context: ./jersey-microservice-billing
+    container_name: jersey-microservice-billing-api
+    ports:
+      - "8086:8080"
+    depends_on:
+      - db
+
+  jersey-microservice-dispute:
+    build:
+      context: ./jersey-microservice-dispute
+    container_name: jersey-microservice-dispute-api
+    ports:
+      - "8087:8080"
+    depends_on:
+      - db
+
+#  db:
+#    image: postgres:15
+#    container_name: microservice-db
+#    environment:
+#      POSTGRES_USER: user
+#      POSTGRES_PASSWORD: password
+#      POSTGRES_DB: microservice_db
+#    ports:
+#      - "5432:5432"

@@ -12,7 +12,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 @Log4j2
-@ApplicationPath("/dispute")
+@ApplicationPath("/billing")
 public class APIApplication extends ResourceConfig {
     final String MONTHLY_JOB = "monthlyJob";
     final String MONTHLY_TRIGGER = "monthlyTrigger";

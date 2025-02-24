@@ -1,6 +1,5 @@
 package com.ntou.creditcard.billing.feepayment;
 
-import com.ntou.connections.OkHttpServiceClient;
 import com.ntou.tool.Common;
 
 import javax.ws.rs.*;

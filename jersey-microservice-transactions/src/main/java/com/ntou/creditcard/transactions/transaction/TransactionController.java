@@ -1,6 +1,5 @@
 package com.ntou.creditcard.transactions.transaction;
 
-import com.ntou.connections.OkHttpServiceClient;
 import com.ntou.tool.Common;
 
 import javax.ws.rs.Consumes;

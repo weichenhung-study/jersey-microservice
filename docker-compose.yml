@@ -1,29 +1,6 @@
 version: '3.8'
 
 services:
-#  jdbc-billofmonth-api:
-#    image: jdbc-billofmonth-api-img
-#    container_name: jdbc-billofmonth-api
-#    ports:
-#      - "8082:8080"
-#    networks:
-#      - mysqlnetwork
-#
-#  jdbc-billrecord-api:
-#    image: jdbc-billrecord-api-img
-#    container_name: jdbc-billrecord-api
-#    ports:
-#      - "8083:8080"
-#    networks:
-#      - mysqlnetwork
-#
-#  jdbc-cuscredit-api:
-#    image: jdbc-cuscredit-api-img
-#    container_name: jdbc-cuscredit-api
-#    ports:
-#      - "8081:8080"
-#    networks:
-#      - mysqlnetwork
 
   jersey-microservice-management:
     build:
@@ -32,10 +9,6 @@ services:
     container_name: jersey-microservice-management-api
     ports:
       - "8084:8080"
-#    depends_on:
-#      - jdbc-billofmonth-api
-#      - jdbc-billrecord-api
-#      - jdbc-cuscredit-api
     networks:
       - mysqlnetwork
 
@@ -46,10 +19,6 @@ services:
     container_name: jersey-microservice-transactions-api
     ports:
       - "8085:8080"
-#    depends_on:
-#      - jdbc-billofmonth-api
-#      - jdbc-billrecord-api
-#      - jdbc-cuscredit-api
     networks:
       - mysqlnetwork
 
@@ -60,10 +29,6 @@ services:
     container_name: jersey-microservice-billing-api
     ports:
       - "8086:8080"
-#    depends_on:
-#      - jdbc-billofmonth-api
-#      - jdbc-billrecord-api
-#      - jdbc-cuscredit-api
     networks:
       - mysqlnetwork
 
@@ -74,10 +39,6 @@ services:
     container_name: jersey-microservice-dispute-api
     ports:
       - "8087:8080"
-#    depends_on:
-#      - jdbc-billofmonth-api
-#      - jdbc-billrecord-api
-#      - jdbc-cuscredit-api
     networks:
       - mysqlnetwork
 

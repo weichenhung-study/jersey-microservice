@@ -13,7 +13,7 @@ import java.util.List;
 
 @Log4j2
 public class DbApiSenderBillrecord {
-    private static final String DB_SERVICE_URL = "http://jdbc-billrecord-api:8080/MyCredit/res/";
+    private static final String DB_SERVICE_URL = "http://jersey-microservice-jdbc-billrecord-api:8080/jersey-microservice-jdbc-billrecord/billrecord-db/";
 
     public static List<BillrecordVO> findCusBillAll(OkHttpServiceClient svc, BillrecordVO vo, String startDate, String endDate) throws JsonProcessingException {
         String str = svc.getService(DB_SERVICE_URL

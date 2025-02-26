@@ -9,7 +9,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class DbApiSenderCuscredit {
-    private static final String DB_SERVICE_URL = "http://jdbc-cuscredit-api:8080/MyCredit/res/";
+    private static final String DB_SERVICE_URL = "http://jersey-microservice-jdbc-cuscredit-api:8080/jersey-microservice-jdbc-cuscredit/cuscredit-db/";
 
     public static CuscreditVO getCardHolder(OkHttpServiceClient cuscreditSvc,String cid, String cardType) throws JsonProcessingException {
         String str = cuscreditSvc.getService(DB_SERVICE_URL + "GetCardHolder?cid=" + cid + "&cardType=" + cardType);

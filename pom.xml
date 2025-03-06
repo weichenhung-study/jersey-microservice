@@ -9,7 +9,7 @@
     <name>jersey-microservice</name>
 
 	<modules>
-        <module>common</module>
+        <module>jersey-microservice-common</module>
         <module>jersey-microservice-management</module>
         <module>jersey-microservice-transactions</module>
         <module>jersey-microservice-billing</module>

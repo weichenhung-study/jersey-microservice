@@ -16,6 +16,7 @@ import java.util.Random;
 @Log4j2
 public class Review {
     private final OkHttpServiceClient okHttpServiceClient = new OkHttpServiceClient();
+    DbApiSenderCuscredit dbApiSenderCuscredit = new DbApiSenderCuscredit();
 
     public Response doAPI(ReviewReq req) throws Exception {
         log.info(Common.API_DIVIDER + Common.START_B + Common.API_DIVIDER);
@@ -25,7 +26,7 @@ public class Review {
          if(!req.checkReq())
              ResTool.regularThrow(res, ReviewRC.T121A.getCode(), ReviewRC.T121A.getContent(), req.getErrMsg());
 
-        CuscreditVO voCuscredit = DbApiSenderCuscredit.getCardHolder(okHttpServiceClient, req.getCid(), req.getCardType());
+        CuscreditVO voCuscredit = dbApiSenderCuscredit.getCardHolder(okHttpServiceClient, req.getCid(), req.getCardType());
 
         String cusMail = "";
         if(voCuscredit == null)
@@ -33,7 +34,7 @@ public class Review {
         else
             cusMail = voCuscredit.getEmail();
 
-        String updateCount = DbApiSenderCuscredit.updateCardApprovalStatus(okHttpServiceClient, voCuscreditUpdate(req));
+        String updateCount = dbApiSenderCuscredit.updateCardApprovalStatus(okHttpServiceClient, voCuscreditUpdate(req));
         if(!updateCount.equals("UpdateCardApprovalStatus00"))
             ResTool.commonThrow(res, ReviewRC.T121C.getCode(), ReviewRC.T121C.getContent());
 

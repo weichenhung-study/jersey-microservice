@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 @Log4j2
 public class Application {
     private final OkHttpServiceClient okHttpServiceClient = new OkHttpServiceClient();
+    DbApiSenderCuscredit dbApiSenderCuscredit = new DbApiSenderCuscredit();
 
     public Response doAPI(ApplicationReq req) throws Exception {
         log.info(Common.API_DIVIDER + Common.START_B + Common.API_DIVIDER);
@@ -25,11 +26,11 @@ public class Application {
         if(!req.checkReq())
             ResTool.regularThrow(res, ApplicationRC.T111A.getCode(), ApplicationRC.T111A.getContent(), req.getErrMsg());
 
-        CuscreditVO resCodeGetCardHolder = DbApiSenderCuscredit.getCardHolder(okHttpServiceClient, req.getCid(), req.getCardType());
+        CuscreditVO resCodeGetCardHolder = dbApiSenderCuscredit.getCardHolder(okHttpServiceClient, req.getCid(), req.getCardType());
         if(resCodeGetCardHolder != null)
             ResTool.commonThrow(res, ApplicationRC.T111D.getCode(), ApplicationRC.T111D.getContent());
 
-        String resCode = DbApiSenderCuscredit.createCuscredit(okHttpServiceClient, voCuscreditInsert(req));
+        String resCode = dbApiSenderCuscredit.createCuscredit(okHttpServiceClient, voCuscreditInsert(req));
         if(!resCode.equals("CreateCuscredit00"))
             ResTool.commonThrow(res, ApplicationRC.T111C.getCode(), ApplicationRC.T111C.getContent());
 

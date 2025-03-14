@@ -13,6 +13,7 @@ import javax.ws.rs.core.Response;
 @Log4j2
 public class DisputeNotation {
     private final OkHttpServiceClient okHttpServiceClient = new OkHttpServiceClient();
+    DbApiSenderBillrecord dbApiSenderBillrecord = new DbApiSenderBillrecord();
 
     public Response doAPI(DisputeNotationReq req) throws Exception {
         log.info(Common.API_DIVIDER + Common.START_B + Common.API_DIVIDER);
@@ -22,7 +23,7 @@ public class DisputeNotation {
         if(!req.checkReq())
             ResTool.regularThrow(res, DisputeNotationRC.T162A.getCode(), DisputeNotationRC.T162A.getContent(), req.getErrMsg());
 
-        String updateResult = DbApiSenderBillrecord.updateDisputedFlag(okHttpServiceClient, voBillrecordSelect(req));
+        String updateResult = dbApiSenderBillrecord.updateDisputedFlag(okHttpServiceClient, voBillrecordSelect(req));
         if(!updateResult.equals("UpdateDisputedFlag00"))
             ResTool.commonThrow(res, DisputeNotationRC.T162C.getCode(), DisputeNotationRC.T162C.getContent());
 

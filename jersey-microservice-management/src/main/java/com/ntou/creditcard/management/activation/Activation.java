@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 @Log4j2
 public class Activation {
     private final OkHttpServiceClient okHttpServiceClient = new OkHttpServiceClient();
+    DbApiSenderCuscredit dbApiSenderCuscredit = new DbApiSenderCuscredit();
 
     public Response doAPI(ActivationReq req) throws Exception {
         log.info(Common.API_DIVIDER + Common.START_B + Common.API_DIVIDER);
@@ -25,8 +26,8 @@ public class Activation {
         if(!req.checkReq())
             ResTool.regularThrow(res, ActivationRC.T131A.getCode(), ActivationRC.T131A.getContent(), req.getErrMsg());
 
-        CuscreditVO voCuscredit = DbApiSenderCuscredit.getCardHolder(okHttpServiceClient, req.getCid(), req.getCardType());
-        String resCode = DbApiSenderCuscredit.updateActivationRecord(okHttpServiceClient,voCuscreditUpdate(req));
+        CuscreditVO voCuscredit = dbApiSenderCuscredit.getCardHolder(okHttpServiceClient, req.getCid(), req.getCardType());
+        String resCode = dbApiSenderCuscredit.updateActivationRecord(okHttpServiceClient,voCuscreditUpdate(req));
 
         MailVO vo = new MailVO();
         if(!resCode.equals("UpdateActivationRecord00")) {

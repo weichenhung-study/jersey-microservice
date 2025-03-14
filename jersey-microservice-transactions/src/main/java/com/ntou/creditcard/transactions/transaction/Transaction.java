@@ -1,6 +1,7 @@
 package com.ntou.creditcard.transactions.transaction;
 
 import com.ntou.connections.OkHttpServiceClient;
+import com.ntou.db.billofmonth.DbApiSenderBillofmonth;
 import com.ntou.db.billrecord.BillrecordVO;
 import com.ntou.db.billrecord.DbApiSenderBillrecord;
 import com.ntou.db.cuscredit.DbApiSenderCuscredit;
@@ -19,6 +20,8 @@ import java.util.UUID;
 @Log4j2
 public class Transaction {
     private final OkHttpServiceClient okHttpServiceClient = new OkHttpServiceClient();
+    DbApiSenderCuscredit dbApiSenderCuscredit = new DbApiSenderCuscredit();
+    DbApiSenderBillrecord dbApiSenderBillrecord = new DbApiSenderBillrecord();
 
     public Response doAPI(TransactionReq req) throws Exception {
         log.info(Common.API_DIVIDER + Common.START_B + Common.API_DIVIDER);
@@ -28,11 +31,11 @@ public class Transaction {
         if(!req.checkReq())
             ResTool.regularThrow(res, TransactionRC.T141A.getCode(), TransactionRC.T141A.getContent(), req.getErrMsg());
 
-        CuscreditVO voCuscredit = DbApiSenderCuscredit.getActivatedCardHolder(okHttpServiceClient, req.getCid(), req.getCardType(), req.getCardNum(), req.getSecurityCode());
+        CuscreditVO voCuscredit = dbApiSenderCuscredit.getActivatedCardHolder(okHttpServiceClient, req.getCid(), req.getCardType(), req.getCardNum(), req.getSecurityCode());
         if(voCuscredit == null)//check客戶是否存在且開卡完成
             ResTool.commonThrow(res, TransactionRC.T141D.getCode(), TransactionRC.T141D.getContent());
 
-        String insertResult = DbApiSenderBillrecord.insertCusDateBill(okHttpServiceClient, voBillrecordInsert(req));
+        String insertResult = dbApiSenderBillrecord.insertCusDateBill(okHttpServiceClient, voBillrecordInsert(req));
         if(!insertResult.equals("InsertCusDateBill00"))
             ResTool.commonThrow(res, TransactionRC.T141C.getCode(), TransactionRC.T141C.getContent());
 

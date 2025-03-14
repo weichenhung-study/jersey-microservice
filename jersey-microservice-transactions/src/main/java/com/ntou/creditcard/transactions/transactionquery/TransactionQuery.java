@@ -17,6 +17,7 @@ import static com.ntou.creditcard.transactions.transactionquery.TransactionQuery
 @Log4j2
 public class TransactionQuery {
     private final OkHttpServiceClient okHttpServiceClient = new OkHttpServiceClient();
+    DbApiSenderBillrecord dbApiSenderBillrecord = new DbApiSenderBillrecord();
 
     public Response doAPI(TransactionQueryReq req) throws Exception {
         log.info(Common.API_DIVIDER + Common.START_B + Common.API_DIVIDER);
@@ -26,7 +27,7 @@ public class TransactionQuery {
         if(!req.checkReq())
             ResTool.regularThrow(res, T161A.getCode(), T161A.getContent(), req.getErrMsg());
 
-        List<BillrecordVO> billList = DbApiSenderBillrecord.findCusBillAll(okHttpServiceClient, voBillrecordSelect(req), req.getStartDate(), req.getEndDate());
+        List<BillrecordVO> billList = dbApiSenderBillrecord.findCusBillAll(okHttpServiceClient, voBillrecordSelect(req), req.getStartDate(), req.getEndDate());
         if(billList == null || billList.isEmpty()) {
             ResTool.setRes(res, T161C.getCode(), T161C.getContent());
             throw new TException(res);

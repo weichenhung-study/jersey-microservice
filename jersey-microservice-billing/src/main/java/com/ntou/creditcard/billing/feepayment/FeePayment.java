@@ -19,6 +19,8 @@ import java.util.List;
 @Log4j2
 public class FeePayment {
     private final OkHttpServiceClient okHttpServiceClient = new OkHttpServiceClient();
+    DbApiSenderCuscredit dbApiSenderCuscredit = new DbApiSenderCuscredit();
+    DbApiSenderBillofmonth dbApiSenderBillofmonth = new DbApiSenderBillofmonth();
 
     public Response doAPI(FeePaymentReq req) throws Exception {
         log.info(Common.API_DIVIDER + Common.START_B + Common.API_DIVIDER);
@@ -29,12 +31,12 @@ public class FeePayment {
             ResTool.regularThrow(res, FeePaymentRC.T171A.getCode(), FeePaymentRC.T171A.getContent(), req.getErrMsg());
 
         BillofmonthVO vo = setUpdatePayDate(req);
-        List<BillofmonthVO> listBillofmonth = DbApiSenderBillofmonth.findCusBill(okHttpServiceClient, vo);
+        List<BillofmonthVO> listBillofmonth = dbApiSenderBillofmonth.findCusBill(okHttpServiceClient, vo);
         if (listBillofmonth != null && listBillofmonth.size() == 1) {
             int notPaidAmount = Integer.parseInt(listBillofmonth.get(0).getAmt()) - Integer.parseInt(req.getPayAmt());
             vo.setNotPaidAmount(String.valueOf(notPaidAmount));
 
-            String updateCount = DbApiSenderBillofmonth.updatePayDate(okHttpServiceClient, vo);
+            String updateCount = dbApiSenderBillofmonth.updatePayDate(okHttpServiceClient, vo);
             if(!updateCount.equals("1"))
                 ResTool.commonThrow(res, FeePaymentRC.T171C.getCode(), FeePaymentRC.T171C.getContent());
             sendMail(req, listBillofmonth.get(0));
@@ -50,7 +52,7 @@ public class FeePayment {
     private void sendMail(FeePaymentReq req, BillofmonthVO key) throws Exception {
         MailVO vo = new MailVO();
 //        CuscreditVO voCuscredit = cuscreditSvc.selectKey(req.getCid(), req.getCardType());
-        CuscreditVO voCuscredit = DbApiSenderCuscredit.getCardHolder(okHttpServiceClient, req.getCid(), req.getCardType());
+        CuscreditVO voCuscredit = dbApiSenderCuscredit.getCardHolder(okHttpServiceClient, req.getCid(), req.getCardType());
         vo.setEmailAddr(voCuscredit.getEmail());
         vo.setSubject("信用卡繳費通知");
         vo.setContent("<h1>收到您的信用卡費</h1>" +

@@ -9,7 +9,6 @@ import com.ntou.sysintegrat.mailserver.JavaMail;
 import com.ntou.sysintegrat.mailserver.MailVO;
 import com.ntou.tool.Common;
 import com.ntou.tool.ResTool;
-import com.ntou.tool.DateTool;
 import lombok.extern.log4j.Log4j2;
 
 import javax.ws.rs.core.Response;
@@ -69,7 +68,7 @@ public class FeePayment {
         vo.setCid(req.getCid());
         vo.setCardType(req.getCardType());
         vo.setPayDate(req.getPayDate());
-        vo.setPaidAmount(req.getPayAmt());
+        vo.setPayAmt(req.getPayAmt());
         vo.setBillMonth(req.getPayDate());
         return vo;
     }

@@ -27,8 +27,8 @@ public class Review {
         log.info(Common.REQ + req);
         ReviewRes res = new ReviewRes();
 
-         if(!req.checkReq())
-             ResTool.regularThrow(res, ReviewRC.T121A.getCode(), ReviewRC.T121A.getContent(), req.getErrMsg());
+        if(!req.checkReq())
+            ResTool.regularThrow(res, ReviewRC.T121A.getCode(), ReviewRC.T121A.getContent(), req.getErrMsg());
         
 		ExecutionTimer.startStage(ExecutionTimer.ExecutionModule.DATA_INTERFACE.getValue());
         CuscreditVO voCuscredit = dbApiSenderCuscredit.getCardHolder(okHttpServiceClient, req.getCid(), req.getCardType());

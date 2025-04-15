@@ -13,7 +13,6 @@ import com.ntou.tool.Common;
 import com.ntou.tool.ExecutionTimer;
 import com.ntou.tool.DateTool;
 import com.ntou.tool.ResTool;
-import com.ntou.tool.DateTool;
 import lombok.extern.log4j.Log4j2;
 
 import javax.ws.rs.core.Response;
@@ -39,14 +38,14 @@ public class GenerateBill {
         log.info(Common.API_DIVIDER + Common.START_B + Common.API_DIVIDER);
         GenerateBillRes res = new GenerateBillRes();
 		
-		ExecutionTimer.startStage(ExecutionTimer.ExecutionModule.DATABASE.getValue());
+		ExecutionTimer.startStage(ExecutionTimer.ExecutionModule.DATA_INTERFACE.getValue());
 
 //      1. 到資料庫找到要寄送帳單的所有客
         List<BillrecordVO> billList = dbApiSenderBillrecord.FindCusBill(okHttpServiceClient);
 //      2. 整理,將資料以卡身分證和卡別分組
         Map<String, List<BillrecordVO>> groupedData = billList.stream()
                 .collect(Collectors.groupingBy(t -> t.getCid() + t.getCardType()));
-        ExecutionTimer.endStage(ExecutionTimer.ExecutionModule.DATABASE.getValue());
+        ExecutionTimer.endStage(ExecutionTimer.ExecutionModule.DATA_INTERFACE.getValue());
 		
 		log.info("groupedData: {}", groupedData);
         String yyyymm = DateTool.getFirstDayOfMonth().substring(0,7);

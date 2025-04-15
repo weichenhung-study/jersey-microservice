@@ -9,7 +9,6 @@ import com.ntou.tool.Common;
 import com.ntou.tool.ExecutionTimer;
 import com.ntou.tool.DateTool;
 import com.ntou.tool.ResTool;
-import com.ntou.tool.DateTool;
 import lombok.extern.log4j.Log4j2;
 
 import javax.ws.rs.core.Response;
@@ -30,7 +29,7 @@ public class Application {
         if(!req.checkReq())
             ResTool.regularThrow(res, ApplicationRC.T111A.getCode(), ApplicationRC.T111A.getContent(), req.getErrMsg());
         
-		ExecutionTimer.startStage(ExecutionTimer.ExecutionModule.DATABASE.getValue());
+		ExecutionTimer.startStage(ExecutionTimer.ExecutionModule.DATA_INTERFACE.getValue());
         CuscreditVO resCodeGetCardHolder = dbApiSenderCuscredit.getCardHolder(okHttpServiceClient, req.getCid(), req.getCardType());
         if(resCodeGetCardHolder != null)
             ResTool.commonThrow(res, ApplicationRC.T111D.getCode(), ApplicationRC.T111D.getContent());
@@ -38,7 +37,7 @@ public class Application {
         String resCode = dbApiSenderCuscredit.createCuscredit(okHttpServiceClient, voCuscreditInsert(req));
         if(!resCode.equals("CreateCuscredit00"))
             ResTool.commonThrow(res, ApplicationRC.T111C.getCode(), ApplicationRC.T111C.getContent());
-		ExecutionTimer.endStage(ExecutionTimer.ExecutionModule.DATABASE.getValue());
+		ExecutionTimer.endStage(ExecutionTimer.ExecutionModule.DATA_INTERFACE.getValue());
 
         sendMail(req);
         ResTool.setRes(res, ApplicationRC.T1110.getCode(), ApplicationRC.T1110.getContent());

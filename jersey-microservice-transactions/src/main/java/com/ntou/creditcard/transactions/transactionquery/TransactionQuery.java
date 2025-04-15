@@ -31,13 +31,13 @@ public class TransactionQuery {
         if(!req.checkReq())
             ResTool.regularThrow(res, T161A.getCode(), T161A.getContent(), req.getErrMsg());
         
-		ExecutionTimer.startStage(ExecutionTimer.ExecutionModule.DATABASE.getValue());
+		ExecutionTimer.startStage(ExecutionTimer.ExecutionModule.DATA_INTERFACE.getValue());
         List<BillrecordVO> billList = dbApiSenderBillrecord.findCusBillAll(okHttpServiceClient, voBillrecordSelect(req), req.getStartDate(), req.getEndDate());
         if(billList == null || billList.isEmpty()) {
             ResTool.setRes(res, T161C.getCode(), T161C.getContent());
             throw new TException(res);
         }
-		ExecutionTimer.endStage(ExecutionTimer.ExecutionModule.DATABASE.getValue());
+		ExecutionTimer.endStage(ExecutionTimer.ExecutionModule.DATA_INTERFACE.getValue());
 
         ResTool.setRes(res, T1610.getCode(), T1610.getContent());
         res.setResult(billList);

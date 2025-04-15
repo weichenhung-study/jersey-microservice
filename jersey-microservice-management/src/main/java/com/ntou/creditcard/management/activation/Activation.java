@@ -30,10 +30,10 @@ public class Activation {
         if(!req.checkReq())
             ResTool.regularThrow(res, ActivationRC.T131A.getCode(), ActivationRC.T131A.getContent(), req.getErrMsg());
         
-		ExecutionTimer.startStage(ExecutionTimer.ExecutionModule.DATABASE.getValue());
+		ExecutionTimer.startStage(ExecutionTimer.ExecutionModule.DATA_INTERFACE.getValue());
         CuscreditVO voCuscredit = dbApiSenderCuscredit.getCardHolder(okHttpServiceClient, req.getCid(), req.getCardType());
         String resCode = dbApiSenderCuscredit.updateActivationRecord(okHttpServiceClient,voCuscreditUpdate(req));
-        ExecutionTimer.endStage(ExecutionTimer.ExecutionModule.DATABASE.getValue());
+        ExecutionTimer.endStage(ExecutionTimer.ExecutionModule.DATA_INTERFACE.getValue());
 
         MailVO vo = new MailVO();
         if(!resCode.equals("UpdateActivationRecord00")) {

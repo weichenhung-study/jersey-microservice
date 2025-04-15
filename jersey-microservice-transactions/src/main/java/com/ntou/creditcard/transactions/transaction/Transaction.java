@@ -1,7 +1,6 @@
 package com.ntou.creditcard.transactions.transaction;
 
 import com.ntou.connections.OkHttpServiceClient;
-import com.ntou.db.billofmonth.DbApiSenderBillofmonth;
 import com.ntou.db.billrecord.BillrecordVO;
 import com.ntou.db.billrecord.DbApiSenderBillrecord;
 import com.ntou.db.cuscredit.DbApiSenderCuscredit;
@@ -12,7 +11,6 @@ import com.ntou.tool.Common;
 import com.ntou.tool.ExecutionTimer;
 import com.ntou.tool.DateTool;
 import com.ntou.tool.ResTool;
-import com.ntou.tool.DateTool;
 import lombok.extern.log4j.Log4j2;
 
 import javax.ws.rs.core.Response;
@@ -35,7 +33,7 @@ public class Transaction {
         if(!req.checkReq())
             ResTool.regularThrow(res, TransactionRC.T141A.getCode(), TransactionRC.T141A.getContent(), req.getErrMsg());
 		
-		ExecutionTimer.startStage(ExecutionTimer.ExecutionModule.DATABASE.getValue());
+		ExecutionTimer.startStage(ExecutionTimer.ExecutionModule.DATA_INTERFACE.getValue());
         CuscreditVO voCuscredit = dbApiSenderCuscredit.getActivatedCardHolder(okHttpServiceClient, req.getCid(), req.getCardType(), req.getCardNum(), req.getSecurityCode());
         if(voCuscredit == null)//check客戶是否存在且開卡完成
             ResTool.commonThrow(res, TransactionRC.T141D.getCode(), TransactionRC.T141D.getContent());
@@ -43,7 +41,7 @@ public class Transaction {
         String insertResult = dbApiSenderBillrecord.insertCusDateBill(okHttpServiceClient, voBillrecordInsert(req));
         if(!insertResult.equals("InsertCusDateBill00"))
             ResTool.commonThrow(res, TransactionRC.T141C.getCode(), TransactionRC.T141C.getContent());
-        ExecutionTimer.endStage(ExecutionTimer.ExecutionModule.DATABASE.getValue());
+        ExecutionTimer.endStage(ExecutionTimer.ExecutionModule.DATA_INTERFACE.getValue());
 
         MailVO vo = new MailVO();
         vo.setEmailAddr(voCuscredit.getEmail());

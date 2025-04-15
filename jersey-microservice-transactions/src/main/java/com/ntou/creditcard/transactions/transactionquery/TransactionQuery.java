@@ -5,6 +5,8 @@ import com.ntou.db.billrecord.BillrecordVO;
 import com.ntou.db.billrecord.DbApiSenderBillrecord;
 import com.ntou.exceptions.TException;
 import com.ntou.tool.Common;
+import com.ntou.tool.DateTool;
+import com.ntou.tool.ExecutionTimer;
 import com.ntou.tool.ResTool;
 import lombok.extern.log4j.Log4j2;
 
@@ -20,24 +22,32 @@ public class TransactionQuery {
     DbApiSenderBillrecord dbApiSenderBillrecord = new DbApiSenderBillrecord();
 
     public Response doAPI(TransactionQueryReq req) throws Exception {
-        log.info(Common.API_DIVIDER + Common.START_B + Common.API_DIVIDER);
+        ExecutionTimer.startStage(ExecutionTimer.ExecutionModule.APPLICATION.getValue());
+
+		log.info(Common.API_DIVIDER + Common.START_B + Common.API_DIVIDER);
         log.info(Common.REQ + req);
         TransactionQueryRes res = new TransactionQueryRes();
 
         if(!req.checkReq())
             ResTool.regularThrow(res, T161A.getCode(), T161A.getContent(), req.getErrMsg());
-
+        
+		ExecutionTimer.startStage(ExecutionTimer.ExecutionModule.DATABASE.getValue());
         List<BillrecordVO> billList = dbApiSenderBillrecord.findCusBillAll(okHttpServiceClient, voBillrecordSelect(req), req.getStartDate(), req.getEndDate());
         if(billList == null || billList.isEmpty()) {
             ResTool.setRes(res, T161C.getCode(), T161C.getContent());
             throw new TException(res);
         }
+		ExecutionTimer.endStage(ExecutionTimer.ExecutionModule.DATABASE.getValue());
+
         ResTool.setRes(res, T1610.getCode(), T1610.getContent());
         res.setResult(billList);
 
         log.info(Common.RES + res);
         log.info(Common.API_DIVIDER + Common.END_B + Common.API_DIVIDER);
-        return Response.status(Response.Status.OK).entity(res).build();
+        
+		ExecutionTimer.endStage(ExecutionTimer.ExecutionModule.APPLICATION.getValue());
+        ExecutionTimer.exportTimings(this.getClass().getSimpleName() + "_" + DateTool.getYYYYmmDDhhMMss() + ".txt");
+		return Response.status(Response.Status.OK).entity(res).build();
     }
 
     private BillrecordVO voBillrecordSelect(TransactionQueryReq req){

@@ -9,6 +9,8 @@ import com.ntou.db.cuscredit.CuscreditVO;
 import com.ntou.sysintegrat.mailserver.JavaMail;
 import com.ntou.sysintegrat.mailserver.MailVO;
 import com.ntou.tool.Common;
+import com.ntou.tool.ExecutionTimer;
+import com.ntou.tool.DateTool;
 import com.ntou.tool.ResTool;
 import com.ntou.tool.DateTool;
 import lombok.extern.log4j.Log4j2;
@@ -24,13 +26,16 @@ public class Transaction {
     DbApiSenderBillrecord dbApiSenderBillrecord = new DbApiSenderBillrecord();
 
     public Response doAPI(TransactionReq req) throws Exception {
-        log.info(Common.API_DIVIDER + Common.START_B + Common.API_DIVIDER);
+        ExecutionTimer.startStage(ExecutionTimer.ExecutionModule.APPLICATION.getValue());
+
+		log.info(Common.API_DIVIDER + Common.START_B + Common.API_DIVIDER);
         log.info(Common.REQ + req);
         TransactionRes res = new TransactionRes();
 
         if(!req.checkReq())
             ResTool.regularThrow(res, TransactionRC.T141A.getCode(), TransactionRC.T141A.getContent(), req.getErrMsg());
-
+		
+		ExecutionTimer.startStage(ExecutionTimer.ExecutionModule.DATABASE.getValue());
         CuscreditVO voCuscredit = dbApiSenderCuscredit.getActivatedCardHolder(okHttpServiceClient, req.getCid(), req.getCardType(), req.getCardNum(), req.getSecurityCode());
         if(voCuscredit == null)//check客戶是否存在且開卡完成
             ResTool.commonThrow(res, TransactionRC.T141D.getCode(), TransactionRC.T141D.getContent());
@@ -38,6 +43,7 @@ public class Transaction {
         String insertResult = dbApiSenderBillrecord.insertCusDateBill(okHttpServiceClient, voBillrecordInsert(req));
         if(!insertResult.equals("InsertCusDateBill00"))
             ResTool.commonThrow(res, TransactionRC.T141C.getCode(), TransactionRC.T141C.getContent());
+        ExecutionTimer.endStage(ExecutionTimer.ExecutionModule.DATABASE.getValue());
 
         MailVO vo = new MailVO();
         vo.setEmailAddr(voCuscredit.getEmail());
@@ -56,7 +62,10 @@ public class Transaction {
 
         log.info(Common.RES + res);
         log.info(Common.API_DIVIDER + Common.END_B + Common.API_DIVIDER);
-        return Response.status(Response.Status.CREATED).entity(res).build();
+        
+		ExecutionTimer.endStage(ExecutionTimer.ExecutionModule.APPLICATION.getValue());
+        ExecutionTimer.exportTimings(this.getClass().getSimpleName() + "_" + DateTool.getYYYYmmDDhhMMss() + ".txt");
+		return Response.status(Response.Status.CREATED).entity(res).build();
     }
 
     private BillrecordVO voBillrecordInsert(TransactionReq req){

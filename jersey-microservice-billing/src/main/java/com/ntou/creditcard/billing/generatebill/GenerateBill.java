@@ -10,6 +10,8 @@ import com.ntou.db.cuscredit.DbApiSenderCuscredit;
 import com.ntou.sysintegrat.mailserver.JavaMail;
 import com.ntou.sysintegrat.mailserver.MailVO;
 import com.ntou.tool.Common;
+import com.ntou.tool.ExecutionTimer;
+import com.ntou.tool.DateTool;
 import com.ntou.tool.ResTool;
 import com.ntou.tool.DateTool;
 import lombok.extern.log4j.Log4j2;
@@ -32,15 +34,21 @@ public class GenerateBill {
         this.okHttpServiceClient = okHttpServiceClient;
     }
     public Response doAPI() throws Exception {
+		ExecutionTimer.startStage(ExecutionTimer.ExecutionModule.APPLICATION.getValue());
+
         log.info(Common.API_DIVIDER + Common.START_B + Common.API_DIVIDER);
         GenerateBillRes res = new GenerateBillRes();
+		
+		ExecutionTimer.startStage(ExecutionTimer.ExecutionModule.DATABASE.getValue());
 
 //      1. 到資料庫找到要寄送帳單的所有客
         List<BillrecordVO> billList = dbApiSenderBillrecord.FindCusBill(okHttpServiceClient);
 //      2. 整理,將資料以卡身分證和卡別分組
         Map<String, List<BillrecordVO>> groupedData = billList.stream()
                 .collect(Collectors.groupingBy(t -> t.getCid() + t.getCardType()));
-        log.info("groupedData: {}", groupedData);
+        ExecutionTimer.endStage(ExecutionTimer.ExecutionModule.DATABASE.getValue());
+		
+		log.info("groupedData: {}", groupedData);
         String yyyymm = DateTool.getFirstDayOfMonth().substring(0,7);
         MailVO vo = new MailVO();
         for (Map.Entry<String, List<BillrecordVO>> entry : groupedData.entrySet()) {
@@ -83,7 +91,10 @@ public class GenerateBill {
 
         log.info(Common.RES + res);
         log.info(Common.API_DIVIDER + Common.END_B + Common.API_DIVIDER);
-        return Response.status(Response.Status.CREATED).entity(res).build();
+        
+		ExecutionTimer.endStage(ExecutionTimer.ExecutionModule.APPLICATION.getValue());
+        ExecutionTimer.exportTimings(this.getClass().getSimpleName() + "_" + DateTool.getYYYYmmDDhhMMss() + ".txt");
+		return Response.status(Response.Status.CREATED).entity(res).build();
     }
 
     private BillofmonthVO setBillofmonthVO(String cid, String cardType, List<BillrecordVO> billList, String amt, String yyyymm){

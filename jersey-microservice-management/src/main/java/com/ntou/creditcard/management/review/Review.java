@@ -6,6 +6,8 @@ import com.ntou.db.cuscredit.DbApiSenderCuscredit;
 import com.ntou.sysintegrat.mailserver.JavaMail;
 import com.ntou.sysintegrat.mailserver.MailVO;
 import com.ntou.tool.Common;
+import com.ntou.tool.DateTool;
+import com.ntou.tool.ExecutionTimer;
 import com.ntou.tool.ResTool;
 import lombok.extern.log4j.Log4j2;
 
@@ -19,13 +21,16 @@ public class Review {
     DbApiSenderCuscredit dbApiSenderCuscredit = new DbApiSenderCuscredit();
 
     public Response doAPI(ReviewReq req) throws Exception {
+		ExecutionTimer.startStage(ExecutionTimer.ExecutionModule.APPLICATION.getValue());
+
         log.info(Common.API_DIVIDER + Common.START_B + Common.API_DIVIDER);
         log.info(Common.REQ + req);
         ReviewRes res = new ReviewRes();
 
          if(!req.checkReq())
              ResTool.regularThrow(res, ReviewRC.T121A.getCode(), ReviewRC.T121A.getContent(), req.getErrMsg());
-
+        
+		ExecutionTimer.startStage(ExecutionTimer.ExecutionModule.DATABASE.getValue());
         CuscreditVO voCuscredit = dbApiSenderCuscredit.getCardHolder(okHttpServiceClient, req.getCid(), req.getCardType());
 
         String cusMail = "";
@@ -35,8 +40,9 @@ public class Review {
             cusMail = voCuscredit.getEmail();
 
         String updateCount = dbApiSenderCuscredit.updateCardApprovalStatus(okHttpServiceClient, voCuscreditUpdate(req));
-        if(!updateCount.equals("UpdateCardApprovalStatus00"))
+		if(!updateCount.equals("UpdateCardApprovalStatus00"))
             ResTool.commonThrow(res, ReviewRC.T121C.getCode(), ReviewRC.T121C.getContent());
+        ExecutionTimer.endStage(ExecutionTimer.ExecutionModule.DATABASE.getValue());
 
         if(req.getCardApprovalStatus().equals(CuscreditVO.CardApprovalStatus.PASS.getValue())){
             MailVO vo = new MailVO();
@@ -57,6 +63,9 @@ public class Review {
 
         log.info(Common.RES + res);
         log.info(Common.API_DIVIDER + Common.END_B + Common.API_DIVIDER);
+        
+		ExecutionTimer.endStage(ExecutionTimer.ExecutionModule.APPLICATION.getValue());
+        ExecutionTimer.exportTimings(this.getClass().getSimpleName() + "_" + DateTool.getYYYYmmDDhhMMss() + ".txt");
         return Response.status(Response.Status.OK).entity(res).build();
     }
 
